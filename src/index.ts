@@ -3,6 +3,7 @@ import type { Config } from 'payload'
 import type { CollectionOverrides } from './utilities/types.js'
 
 import { addPluginCollections } from './utilities/add-collections.js'
+import { makeN8nWebhookRequest as makeN8nWebhookRequestFn } from './utilities/make-webhook-request.js'
 
 export type N8nWebhooksConfig = {
   /** The baseURL for your n8n instance */
@@ -82,3 +83,5 @@ export const n8nWebhooks =
 
     return config
   }
+
+export const makeN8nWebhookRequest = makeN8nWebhookRequestFn
