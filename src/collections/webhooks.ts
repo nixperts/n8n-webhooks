@@ -54,6 +54,8 @@ export const n8nWebhooks: CollectionConfig = {
         description: 'A title for you to recognize the webhook',
         position: 'sidebar',
       },
+      required: true,
+      unique: true,
     },
     {
       type: 'row',

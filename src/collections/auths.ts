@@ -15,6 +15,7 @@ export const n8nAuthCredentials: CollectionConfig = {
         position: 'sidebar',
       },
       required: true,
+      unique: true,
     },
     {
       name: 'type',
