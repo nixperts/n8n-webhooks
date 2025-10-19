@@ -46,6 +46,8 @@ The plugin installs two new collections in your PayloadCMS instance:
 1. **Webhooks**: Register different webhooks from your n8n instance here
 2. **Auth Credentials**: Configure authentication credentials used by your webhooks for n8n
 
+![](https://github.com/nixperts/n8n-webhooks/blob/main/docs/webhooks-example.png)
+
 💡 In the detail view of the `Webhooks` collection, you can test the webhooks
 
 # Usage
