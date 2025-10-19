@@ -1,6 +1,6 @@
 {
   "name": "@nixperts/n8n-webhooks",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A plugin for PayloadCMS to add webhooks for n8n",
   "license": "MIT",
   "type": "module",
