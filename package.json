@@ -117,5 +117,13 @@
     ]
   },
   "registry": "https://registry.npmjs.org/",
-  "dependencies": {}
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nixperts/n8n-webhooks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nixperts/n8n-webhooks/issues"
+  },
+  "homepage": "https://github.com/nixperts/n8n-webhooks#readme"
 }
