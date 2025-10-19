@@ -1,1 +1,1 @@
-export { BeforeDashboardClient } from '../components/BeforeDashboardClient.js'
+export { TestWebhookButton } from '../components/test-webhook-button.js'

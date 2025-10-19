@@ -16,20 +16,12 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@payload-config": [
-        "./payload.config.ts"
-      ],
-      "n8n-webhooks": [
-        "../src/index.ts"
-      ],
-      "n8n-webhooks/client": [
-        "../src/exports/client.ts"
-      ],
-      "n8n-webhooks/rsc": [
-        "../src/exports/rsc.ts"
-      ]
+      "@payload-config": ["./payload.config.ts"],
+      "@nixperts/n8n-webhooks": ["../src/index.ts"],
+      "@nixperts/n8n-webhooks/client": ["../src/exports/client.ts"],
+      "@nixperts/n8n-webhooks/rsc": ["../src/exports/rsc.ts"]
     },
     "noEmit": true,
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": false
   }
 }

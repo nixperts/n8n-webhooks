@@ -1,9 +1,5 @@
-import { BeforeDashboardClient as BeforeDashboardClient_fc6e7dd366b9e2c8ce77d31252122343 } from 'n8n-webhooks/client'
-import { BeforeDashboardServer as BeforeDashboardServer_c4406fcca100b2553312c5a3d7520a3f } from 'n8n-webhooks/rsc'
+import { TestWebhookButton as TestWebhookButton_3fc0637856359ee81ff20c1d25198fe4 } from '@nixperts/n8n-webhooks/client'
 
 export const importMap = {
-  'n8n-webhooks/client#BeforeDashboardClient':
-    BeforeDashboardClient_fc6e7dd366b9e2c8ce77d31252122343,
-  'n8n-webhooks/rsc#BeforeDashboardServer':
-    BeforeDashboardServer_c4406fcca100b2553312c5a3d7520a3f,
+  "@nixperts/n8n-webhooks/client#TestWebhookButton": TestWebhookButton_3fc0637856359ee81ff20c1d25198fe4
 }

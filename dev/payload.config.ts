@@ -3,11 +3,11 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryReplSet } from 'mongodb-memory-server'
 import path from 'path'
 import { buildConfig } from 'payload'
-import { n8NWebhooks } from 'n8n-webhooks'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { testEmailAdapter } from './helpers/testEmailAdapter.js'
+import { n8nWebhookPlugin } from './n8n-webhook-plugin-config.js'
 import { seed } from './seed.js'
 
 const filename = fileURLToPath(import.meta.url)
@@ -57,13 +57,7 @@ const buildConfigWithMemoryDB = async () => {
     onInit: async (payload) => {
       await seed(payload)
     },
-    plugins: [
-      n8NWebhooks({
-        collections: {
-          posts: true,
-        },
-      }),
-    ],
+    plugins: [n8nWebhookPlugin],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
     sharp,
     typescript: {

@@ -2,6 +2,20 @@
 
 * About
 [[https://n8n.io][N8n]] allows users to create intricate flows and make powerful connections between apps and automizations. Recently, I stumbled upon it and when trying to use it for my own purposes, I found that a plugin for [[https://payloadcms.com/][PayloadCMS]] would be very useful.
+* TODOS [0/6]
+** TODO Clean the default repo
+** TODO Add the n8n collection
+** TODO Add the n8n fire-webhook endpoint
+- Find webhook by Id
+** TODO Test webhook button
+- Would be nice to be able to test the webhooks
+** TODO Function to fire webhook in project
+** TODO Write the readme
+- What does the plugin do
+- Installation
+- Configuration
+- Usage
+- Getting started
 * WARNING: Early work in progress
 - Don't expect this plugin to cover everything. It is still very early. High-quality issues and PRs are appreciated.
 * TODO Installation

@@ -6,14 +6,71 @@
  * and re-run `payload generate:types` to regenerate this file.
  */
 
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Brisbane'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
+
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
+  blocks: {};
   collections: {
     posts: Post;
     media: Media;
-    'plugin-collection': PluginCollection;
+    'n8n-webhooks': N8NWebhook;
+    'n8n-auth-credentials': N8NAuthCredential;
     users: User;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -23,7 +80,8 @@ export interface Config {
   collectionsSelect: {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    'plugin-collection': PluginCollectionSelect<false> | PluginCollectionSelect<true>;
+    'n8n-webhooks': N8NWebhooksSelect<false> | N8NWebhooksSelect<true>;
+    'n8n-auth-credentials': N8NAuthCredentialsSelect<false> | N8NAuthCredentialsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -67,7 +125,6 @@ export interface UserAuthOperations {
  */
 export interface Post {
   id: string;
-  addedByPlugin?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -91,10 +148,59 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "plugin-collection".
+ * via the `definition` "n8n-webhooks".
  */
-export interface PluginCollection {
+export interface N8NWebhook {
   id: string;
+  /**
+   * A title for you to recognize the webhook
+   */
+  title?: string | null;
+  /**
+   * The path of the webhook provided by n8n
+   */
+  webhookPath: string;
+  /**
+   * The method expected from n8n for this webhook
+   */
+  method: 'get' | 'post';
+  auth: {
+    /**
+     * Set authentication if applicable
+     */
+    type: 'none' | 'basic-auth';
+    /**
+     * Choose which authentication method should be used. You can set up an authentication method once and then re-use it.
+     */
+    credentials?: (string | null) | N8NAuthCredential;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "n8n-auth-credentials".
+ */
+export interface N8NAuthCredential {
+  id: string;
+  /**
+   * A title for you to recognize the authentication credentials
+   */
+  title: string;
+  /**
+   * The method expected from n8n for this webhook
+   */
+  type: 'basic-auth';
+  basicAuth?: {
+    /**
+     * The username used for basic auth with n8n
+     */
+    username: string;
+    /**
+     * The password used for basic auth with n8n
+     */
+    password: string;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -113,6 +219,13 @@ export interface User {
   hash?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
   password?: string | null;
 }
 /**
@@ -131,8 +244,12 @@ export interface PayloadLockedDocument {
         value: string | Media;
       } | null)
     | ({
-        relationTo: 'plugin-collection';
-        value: string | PluginCollection;
+        relationTo: 'n8n-webhooks';
+        value: string | N8NWebhook;
+      } | null)
+    | ({
+        relationTo: 'n8n-auth-credentials';
+        value: string | N8NAuthCredential;
       } | null)
     | ({
         relationTo: 'users';
@@ -185,7 +302,6 @@ export interface PayloadMigration {
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
-  addedByPlugin?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -208,10 +324,34 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "plugin-collection_select".
+ * via the `definition` "n8n-webhooks_select".
  */
-export interface PluginCollectionSelect<T extends boolean = true> {
-  id?: T;
+export interface N8NWebhooksSelect<T extends boolean = true> {
+  title?: T;
+  webhookPath?: T;
+  method?: T;
+  auth?:
+    | T
+    | {
+        type?: T;
+        credentials?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "n8n-auth-credentials_select".
+ */
+export interface N8NAuthCredentialsSelect<T extends boolean = true> {
+  title?: T;
+  type?: T;
+  basicAuth?:
+    | T
+    | {
+        username?: T;
+        password?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -229,6 +369,13 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

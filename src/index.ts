@@ -1,55 +1,37 @@
-import type { CollectionSlug, Config } from 'payload'
+import type { Config } from 'payload'
 
-import { customEndpointHandler } from './endpoints/customEndpointHandler.js'
+import type { CollectionOverrides } from './utilities/types.js'
+
+import { addPluginCollections } from './utilities/add-collections.js'
 
 export type N8nWebhooksConfig = {
-  /**
-   * List of collections to add a custom field
-   */
-  collections?: Partial<Record<CollectionSlug, true>>
-  disabled?: boolean
+  /** The baseURL for your n8n instance */
+  baseUrl: string
+  /** Set the plugin to be used or not */
+  enabled?: boolean
+  /** Override and customize the n8n-auth-credentials collection */
+  n8nAuthCredentialOverrides?: CollectionOverrides
+  /** Override and customize the n8n-webhooks collection */
+  n8nWebhookOverrides?: CollectionOverrides
+  /** Set to true if you are using the test webhook functionality of n8n
+   * Will suffix the baseUrl with /test-webhook/ instead of /webhook */
+  useTestInstance?: boolean
 }
 
-export const n8NWebhooks =
+export const n8nWebhooks =
   (pluginOptions: N8nWebhooksConfig) =>
   (config: Config): Config => {
     if (!config.collections) {
       config.collections = []
     }
 
-    config.collections.push({
-      slug: 'plugin-collection',
-      fields: [
-        {
-          name: 'id',
-          type: 'text',
-        },
-      ],
-    })
-
-    if (pluginOptions.collections) {
-      for (const collectionSlug in pluginOptions.collections) {
-        const collection = config.collections.find(
-          (collection) => collection.slug === collectionSlug,
-        )
-
-        if (collection) {
-          collection.fields.push({
-            name: 'addedByPlugin',
-            type: 'text',
-            admin: {
-              position: 'sidebar',
-            },
-          })
-        }
-      }
-    }
+    config = addPluginCollections(pluginOptions, config)
 
     /**
      * If the plugin is disabled, we still want to keep added collections/fields so the database schema is consistent which is important for migrations.
      * If your plugin heavily modifies the database schema, you may want to remove this property.
      */
-    if (pluginOptions.disabled) {
+    if (!pluginOptions.enabled) {
       return config
     }
 
@@ -61,26 +43,33 @@ export const n8NWebhooks =
       config.admin = {}
     }
 
-    if (!config.admin.components) {
-      config.admin.components = {}
+    // if (!config.admin.components) {
+    //   config.admin.components = {}
+    // }
+
+    // if (!config.admin.components.beforeDashboard) {
+    //   config.admin.components.beforeDashboard = []
+    // }
+
+    // config.admin.components.beforeDashboard.push(`n8n-webhooks/client#BeforeDashboardClient`)
+    // config.admin.components.beforeDashboard.push(`n8n-webhooks/rsc#BeforeDashboardServer`)
+
+    // config.endpoints.push({
+    //   handler: customEndpointHandler,
+    //   method: 'get',
+    //   path: '/my-plugin-endpoint',
+    // })
+
+    if (!config.custom) {
+      config.custom = {}
     }
 
-    if (!config.admin.components.beforeDashboard) {
-      config.admin.components.beforeDashboard = []
+    if (!config.custom.n8nWebhookPlugin) {
+      config.custom.n8nWebhookPlugin = {
+        baseUrl: pluginOptions.baseUrl,
+        useTestInstance: pluginOptions.useTestInstance ?? false,
+      }
     }
-
-    config.admin.components.beforeDashboard.push(
-      `n8n-webhooks/client#BeforeDashboardClient`,
-    )
-    config.admin.components.beforeDashboard.push(
-      `n8n-webhooks/rsc#BeforeDashboardServer`,
-    )
-
-    config.endpoints.push({
-      handler: customEndpointHandler,
-      method: 'get',
-      path: '/my-plugin-endpoint',
-    })
 
     const incomingOnInit = config.onInit
 
@@ -88,24 +77,6 @@ export const n8NWebhooks =
       // Ensure we are executing any existing onInit functions before running our own.
       if (incomingOnInit) {
         await incomingOnInit(payload)
-      }
-
-      const { totalDocs } = await payload.count({
-        collection: 'plugin-collection',
-        where: {
-          id: {
-            equals: 'seeded-by-plugin',
-          },
-        },
-      })
-
-      if (totalDocs === 0) {
-        await payload.create({
-          collection: 'plugin-collection',
-          data: {
-            id: 'seeded-by-plugin',
-          },
-        })
       }
     }
 
